@@ -124,6 +124,8 @@ App.populator('Perez1', function (page, article) {
       descr.find('.wp-polls-loading').remove();
       descr.find('.wp-polls form').remove();
 
+      descr.find('a[href$="#VotePoll"]').remove();
+
       //Find all the links in the description and override default click behaviour
       //Think of the bug on iPhone when it would fail to load the card after click
       descr.find('a').on('click', function(e){

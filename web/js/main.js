@@ -7,7 +7,7 @@ App.populator('Perez1', function (page, article) {
   // But only do so once the card is ready
   cards.ready(function () {
     feedParser.getArticles(function (articles){
-      //console.log(articles);
+      console.log(articles);
       articleData = articles;
       index = articleData[index].index;  
       addContent();
@@ -104,54 +104,51 @@ App.populator('Perez1', function (page, article) {
       var descr = $('<div />').html(articleData[i].content);
 
       //Finds all the 'children' in the description
-      descr.children().each(function(i, descrChild){
+      // descr.children().each(function(i, descrChild){
+       // (function() {
         //Finds all the 'children' without an image (<p>) in the description, adds padding to the text
-        if ($(this).find('img').length ===0){
-          $(this).css('padding',10);
-        }
-        //Adds default image to articles that have videos in <span> tags
-        if ($(this).find('span').length){
-          var imgs = $('<img />');
-          imgs.attr('src', 'img/purple_video.png');
-          imgs.addClass('centeredImage');
-          //imgs.css('width', '100px');
-          //imgs.attr('height', '30%');
-          $(this).find('span').replaceWith(imgs);
-          imgs.parent().css('text-align', 'center');
+        descr.children().not(descr.children().has('img')).css('padding',10);
 
-        }
-        //Scale the Embedded YouTube video to fit the page
-        if ($(this).find('iframe').length){
-          console.log('testing');
-          $(this).find('iframe').width('100%');
-          $(this).find('iframe').height('56%');
-        }
-        //Find all the links in the description and override default click behaviour
-        //Think of the bug on iPhone when it would fail to load the card after click
-        if ($(this).find('a')){
-            $(this).find('a').on('click', function(e){
-              e.preventDefault();
-              cards.browser.open($(this).attr("href"));
-            }); 
-        }
-        //Adds default image to articles
-        if ($(descr).find('img').length===0){
-          var imgs = new Image();
-          imgs.src = 'img/perez.jpg';
-          $(descr).prepend(imgs);
-        }
-    });
-    // For all images in description, make them clickable to the article
-    descr.find('img').clickable().on('click', function (){
-          cards.browser.open(articleData[i].link); //Click the image, open article URL
-    });
+      //Adds default image to articles that have videos in <span> tags
+      if (descr.find('span').length){
+        var imgs = $('<img />');
+        imgs.attr('src', 'img/purple_video.png');
+        imgs.addClass('centeredImage');
+        descr.find('span').replaceWith(imgs);
+        imgs.parent().css('text-align', 'center');
+      }
+      //Scale the Embedded YouTube video to fit the page
+      descr.find('iframe').width('100%').height('56%');
+
+      //Find all the poll forms and form loading spinners - remove them
+      descr.find('.wp-polls-loading').remove();
+      descr.find('.wp-polls form').remove();
+
+      //Find all the links in the description and override default click behaviour
+      //Think of the bug on iPhone when it would fail to load the card after click
+      descr.find('a').on('click', function(e){
+        e.preventDefault();
+        cards.browser.open($(this).attr("href"));
+      }); 
+
+      //Adds default image to articles
+      if (descr.find('img').length === 0){
+        var imgs = new Image();
+        imgs.src = 'img/perez.jpg';
+        $(descr).prepend(imgs);
+      }
+
+      // For all images in description, make them clickable to the article
+      descr.find('img').clickable().on('click', function (){
+            cards.browser.open(articleData[i].link); //Click the image, open article URL
+      });
 
     articleSection.append(descr);
     //Actually append all the article elements
     article.append(articleSection);
     article.scrollable();
     return article[0];
-    }
+  }
   }
 }, function (page, article) {// Destructor for Perez
   var os = cards.utils.platform.os;
